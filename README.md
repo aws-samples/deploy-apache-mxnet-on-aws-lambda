@@ -1,4 +1,5 @@
-# Why Apache MXNet on AWS Lambda
+# Deploying Apache MXNet on AWS Lambda
+## Why Deploying Apache MXNet on AWS Lambda
 When it comes to Amazon SageMaker model deployment, people usually deploy it on Amazon SageMaker endpoint, which cost inefficiency. However, there is a gap for how to deploy MXNet Model on Lambda, cus this is a total greenfield for data scientists. Instead, we can directly deploy our output model to Lambda and benefit from 
 Serverless Architectures.
 
@@ -9,7 +10,7 @@ In this example we will pre-trained model according to Amazon SageMaker Example 
 
 If you want to deploy model to AWS Lambda and benefit from Serverless compute resource you need to  ***Dealing with Lambda's size limitations***
 
-## Dealing with AWS Lambda's size limitations
+### Dealing with AWS Lambda's size limitations
 Total size of this project is about ***300 MB***, Includes:
 1. output image-classification model on Amazon S3 ***50 MB***
 2. Apache MXNet 1.6.0 and dependency ***250 MB***
@@ -20,17 +21,17 @@ To deal with deployment package size. ***50 MB (zipped, for direct upload).*** W
 1. Keep model on Amazon S3
 2. Package Apache MXNet and dependency as AWS Lambda Layer
 
-## There is several step as following:
-1. Pre-trained Model with Amazon SageMaker Example
-2. Package Apache MXNet as AWS Lambda Layer
-3. Use Apache MXNet for Inference with a ResNet Model in your AWS Lambda code
-4. AWS Lambda Execution Result and Cold start latency
+### There is several step as following:
+1. [Train Model with Amazon SageMaker Example](#train-model-with-amazon-sagemaker-example)
+2. [Package Apache MXNet as AWS Lambda Layer](#package-apache-mxnet-as-aws-lambda-layer-on-your-local-machine)
+3. [Use Apache MXNet for Inference](#use-apache-mxnet-for-inference-with-a-resnet-model)
+4. [AWS Lambda Execution Result](#aws-lambda-execution-result)
 
 
-# Pre-trained Model with Amazon SageMaker Example
+## Train Model with Amazon SageMaker Example
 [End-to-End Multiclass Image Classification Example](https://github.com/aws/amazon-sagemaker-examples/blob/master/introduction_to_amazon_algorithms/imageclassification_caltech/Image-classification-fulltraining.ipynb) is an end-to-end example of distributed image classification algorithm. In this example, we will use the Amazon sagemaker image classification algorithm to train on the [caltech-256 dataset](http://www.vision.caltech.edu/Image_Datasets/Caltech256/).
 
-## Create model in your Amazon SageMaker Notework 
+### Create model in your Amazon SageMaker Notework 
 1. Login to your AWS Console -> Amazon SageMaker -> Notebook instances
 
 ![image](https://user-images.githubusercontent.com/38385178/103614634-038f9f00-4f64-11eb-9fc8-72542e69a78d.png)
@@ -56,7 +57,7 @@ You can change those parameters according to your use case and scenario. Just **
 ![image](https://user-images.githubusercontent.com/38385178/103617997-291fa700-4f6a-11eb-8b3e-1a2a4ef40ca2.png)
 
 
-# Package Apache MXNet as AWS Lambda Layer on your local machine
+## Package Apache MXNet as AWS Lambda Layer on your local machine
 1. Export your package dir, and clear file in target dir
 ```
 export PKG_DIR="python/lib"
@@ -74,7 +75,7 @@ zip -r python-mxnet.zip ${PKG_DIR}
 aws s3 cp python-mxnet.zip s3://<<yourbucket>>/<<prefix-key>>/python-mxnet.zip
 ```
 
-## AWS Lambda Layer settings
+### AWS Lambda Layer settings
 AWS Lambda -> Create Layers  
 
 ![image](https://user-images.githubusercontent.com/38385178/103614005-9f201000-4f62-11eb-98cb-7c8326fac2bc.png)
@@ -86,7 +87,7 @@ Select **python 3.6** (like above version) -> paste **s3://yourbucket/prefix-key
 ![image](https://user-images.githubusercontent.com/38385178/103614354-5b79d600-4f63-11eb-87a1-c101d21ef033.png)
 
 
-# Use Apache MXNet for Inference with a ResNet Model
+## Use Apache MXNet for Inference with a ResNet Model
 Apache MXNet model load_checkpoint
 1. Read-only file system except **/tmp**
 2. Download Apache MXNet output model to **/tmp** and unzip it
@@ -100,7 +101,7 @@ import numpy as np
 import os
 import boto3
 
-# change your bucket and key here
+## change your bucket and key here
 bucket = '{{your-bucket-name}}'
 key = '{{your-model-output-prefix}}/model.tar.gz'
 
@@ -146,7 +147,7 @@ def lambda_handler(event, context):
     
     return {'records': output}
 ```
-## AWS Lambda function settings
+### AWS Lambda function settings
 1. AWS Lambda -> **Create Lambda** function and **Author from scratch**
 
 ![image](https://user-images.githubusercontent.com/38385178/103616796-0e4c3300-4f68-11eb-86a3-109b27b5b6ed.png)
@@ -192,7 +193,7 @@ def lambda_handler(event, context):
 
 <img width="962" alt="image" src="https://user-images.githubusercontent.com/38385178/103723438-05616d00-500d-11eb-9efb-7e149474d7ea.png">
 
-# AWS Lambda Execution Result
+## AWS Lambda Execution Result
 Execution Result:
 1. Duration: **637.31 ms**
 2. Init Duration: **3885.41 ms**
