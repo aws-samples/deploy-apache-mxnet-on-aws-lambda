@@ -201,3 +201,12 @@ Execution Result:
 <img width="1059" alt="image" src="https://user-images.githubusercontent.com/38385178/103723513-3b9eec80-500d-11eb-810d-f68ed740051e.png">
 
 <img width="857" alt="image" src="https://user-images.githubusercontent.com/38385178/103725947-abfc3c80-5012-11eb-8af8-ccd07f06441f.png">
+
+
+## Security
+
+See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
+
+## License
+
+This library is licensed under the MIT-0 License. See the LICENSE file.
