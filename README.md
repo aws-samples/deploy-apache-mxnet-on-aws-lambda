@@ -1,10 +1,8 @@
 # Deploying Apache MXNet on AWS Lambda
 ## Why Deploying Apache MXNet on AWS Lambda
-When it comes to Amazon SageMaker model deployment, people usually deploy it on Amazon SageMaker endpoint, which cost inefficiency. However, there is a gap for how to deploy MXNet Model on Lambda, cus this is a total greenfield for data scientists. Instead, we can directly deploy our output model to Lambda and benefit from 
-Serverless Architectures.
+When it comes to Amazon SageMaker model deployment, people usually deploy it on Amazon SageMaker endpoint, which can be more expensive in certain scenarios since the [cost is based on instance-hour](https://aws.amazon.com/sagemaker/pricing/). However, there is a gap for how to deploy MXNet Model on AWS Lambda, and this is a  greenfield for data scientists. Instead, we can directly deploy our output model to Lambda and benefit from serverless architectures.
 
-This is a example of how to deploy your Apache MXNet model on Lambda which you can benefit from Lambda pricing model and there is some tradeoff which is cold start. 
-In this example we will pre-trained model according to Amazon SageMaker Example [End-to-End Multiclass Image Classification Example](https://github.com/aws/amazon-sagemaker-examples/blob/master/introduction_to_amazon_algorithms/imageclassification_caltech/Image-classification-fulltraining.ipynb) which will export a model to S3 which we can deployed it on [SageMaker Endpoint](https://docs.aws.amazon.com/sagemaker/latest/dg/whatis.html) or  [AWS Lambda](https://aws.amazon.com/lambda). 
+This is a example of how to deploy your Apache MXNet model on Lambda, which you can benefit from Lambda pricing model. Note that there are some tradeoffs such as [cold start](https://aws.amazon.com/blogs/compute/new-for-aws-lambda-predictable-start-up-times-with-provisioned-concurrency/). Here we will use a pre-trained model in the Amazon SageMaker [End-to-End Multiclass Image Classification Example](https://github.com/aws/amazon-sagemaker-examples/blob/master/introduction_to_amazon_algorithms/imageclassification_caltech/Image-classification-fulltraining.ipynb), which will export a model to S3 and we can deploy it on [SageMaker Endpoint](https://docs.aws.amazon.com/sagemaker/latest/dg/whatis.html) or [AWS Lambda](https://aws.amazon.com/lambda). 
 
 ![圖片 1](https://user-images.githubusercontent.com/17841922/103724544-7f92f100-500f-11eb-9487-bcd34bf312c4.png)
 
@@ -21,15 +19,14 @@ To deal with deployment package size. ***50 MB (zipped, for direct upload).*** W
 1. Keep model on Amazon S3
 2. Package Apache MXNet and dependency as AWS Lambda Layer
 
-### There is several step as following:
-1. [Train Model with Amazon SageMaker Example](#train-model-with-amazon-sagemaker-example)
+### Steps:
+1. [Model Training as Shown in Amazon SageMaker Example](#train-model-with-amazon-sagemaker-example)
 2. [Package Apache MXNet as AWS Lambda Layer](#package-apache-mxnet-as-aws-lambda-layer-on-your-local-machine)
 3. [Use Apache MXNet for Inference](#use-apache-mxnet-for-inference-with-a-resnet-model)
 4. [AWS Lambda Execution Result](#aws-lambda-execution-result)
 
-
-## Train Model with Amazon SageMaker Example
-[End-to-End Multiclass Image Classification Example](https://github.com/aws/amazon-sagemaker-examples/blob/master/introduction_to_amazon_algorithms/imageclassification_caltech/Image-classification-fulltraining.ipynb) is an end-to-end example of distributed image classification algorithm. In this example, we will use the Amazon sagemaker image classification algorithm to train on the [caltech-256 dataset](http://www.vision.caltech.edu/Image_Datasets/Caltech256/).
+## Model Training as Shown in Amazon SageMaker Example
+[End-to-End Multiclass Image Classification Example](https://github.com/aws/amazon-sagemaker-examples/blob/master/introduction_to_amazon_algorithms/imageclassification_caltech/Image-classification-fulltraining.ipynb) is an end-to-end example of distributed image classification algorithm. In this example, we will use the Amazon Sagemaker image classification algorithm to train on the [caltech-256 dataset](http://www.vision.caltech.edu/Image_Datasets/Caltech256/).
 
 ### Create model in your Amazon SageMaker Notework 
 1. Login to your AWS Console -> Amazon SageMaker -> Notebook instances
@@ -48,7 +45,7 @@ To deal with deployment package size. ***50 MB (zipped, for direct upload).*** W
 ![image](https://user-images.githubusercontent.com/38385178/103615388-7b11fe00-4f65-11eb-8697-4ad6505b844b.png)
 
 4. **Training parameters** with the parameters for the training job, and hyperparameters that are specific to the algorithm.
-You can change those parameters according to your use case and scenario. Just **remeber the number of training epochs**, which you need to provide when you deploy the model.
+You can change those parameters according to your use case and scenario. Just **remember the number of training epochs**, which you need to provide when you deploy the model.
 
 ![image](https://user-images.githubusercontent.com/17841922/104262333-5c11ef80-54c2-11eb-9548-da370ed41460.png)
 
@@ -94,7 +91,7 @@ Apache MXNet model load_checkpoint
 3. Apache MXNet image provide method to read, resize and convert format
 
 ### The AWS Lambda code is as following:
-```
+```python
 import json
 import mxnet as mx
 import numpy as np
