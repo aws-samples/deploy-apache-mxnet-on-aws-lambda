@@ -57,7 +57,7 @@ You can change those parameters according to your use case and scenario. Just **
 ## Package Apache MXNet as AWS Lambda Layer on your local machine
 1. Export your package dir, and clear file in target dir
 ```
-export PKG_DIR="python/lib"
+export PKG_DIR="build/python/lib/python3.6/site-packages"
 rm -rf ${PKG_DIR} && mkdir -p ${PKG_DIR}
 ```
 
